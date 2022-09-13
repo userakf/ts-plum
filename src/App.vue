@@ -20,25 +20,63 @@ function lineTo(p1: Point, p2: Point) {
   ctx.lineTo(p2.x, p2.y)
   ctx.stroke()
 }
-function drawBranch(l: Branch) {
-  const { start, length, theta } = l
-  const end = {
-    x: start.x + length * Math.cos(theta),
-    y: start.y + length * Math.sin(theta)
+function getEndPoint(b: Branch) {
+  return {
+    x: b.start.x + b.length * Math.cos(b.theta),
+    y: b.start.y + b.length * Math.sin(b.theta)
   }
-  lineTo(start, end)
+}
+function getLength(b: Branch) {
+  return b.length + (Math.random() * 10 - 5)
+}
+function drawBranch(b: Branch) {
+  lineTo(b.start, getEndPoint(b))
 }
 function init() {
   ctx.strokeStyle = '#fff'
-  const branch = {
+  step({
     start: { x: WIDTH / 2, y: HEIGHT },
-    length: 100,
+    length: 40,
     theta: -Math.PI / 2
-  }
-  drawBranch(branch)
+  })
 }
-onMounted(() => {
+const pendingTask: Function[] = []
+function step(b: Branch, depth = 0) {
 
+  const end = getEndPoint(b)
+  drawBranch(b)
+  if (depth < 2 || Math.random() < 0.5) {
+    pendingTask.push(() => step({
+      start: end,
+      length: b.length + (Math.random() * 10 - 5),
+      theta: b.theta - 0.3 * Math.random()
+    }, depth + 1))
+  }
+  if (depth < 2 || Math.random() < 0.5) {
+    pendingTask.push(() => step({
+      start: end,
+      length: b.length + (Math.random() * 10 - 5),
+      theta: b.theta + 0.3 * Math.random()
+    }, depth + 1))
+  }
+
+}
+function frame() {
+  const tasks = [...pendingTask]
+  pendingTask.length = 0
+  tasks.forEach(fn => fn())
+}
+let framsCount = 0
+function startFrame() {
+  requestAnimationFrame(() => {
+    framsCount += 1
+    if (framsCount % 3 === 0)
+      frame()
+    startFrame()
+  })
+}
+startFrame()
+onMounted(() => {
   init()
 })
 </script>
