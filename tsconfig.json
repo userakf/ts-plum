@@ -11,6 +11,9 @@
     "isolatedModules": true,
     "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
+    "types": [
+      "vue/ref-macros"
+    ],
     "skipLibCheck": true
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
