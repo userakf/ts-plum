@@ -3,8 +3,8 @@ import { onMounted } from 'vue';
 
 const el = $ref<HTMLCanvasElement>()
 const ctx = $computed(() => el!.getContext('2d')!)
-const WIDTH = 400
-const HEIGHT = 400
+const WIDTH = 1000
+const HEIGHT = 600
 interface Point {
   x: number,
   y: number
@@ -26,9 +26,7 @@ function getEndPoint(b: Branch) {
     y: b.start.y + b.length * Math.sin(b.theta)
   }
 }
-function getLength(b: Branch) {
-  return b.length + (Math.random() * 10 - 5)
-}
+
 function drawBranch(b: Branch) {
   lineTo(b.start, getEndPoint(b))
 }
@@ -36,7 +34,7 @@ function init() {
   ctx.strokeStyle = '#fff'
   step({
     start: { x: WIDTH / 2, y: HEIGHT },
-    length: 40,
+    length: 15,
     theta: -Math.PI / 2
   })
 }
@@ -45,14 +43,14 @@ function step(b: Branch, depth = 0) {
 
   const end = getEndPoint(b)
   drawBranch(b)
-  if (depth < 2 || Math.random() < 0.5) {
+  if (depth < 4 || Math.random() < 0.5) {
     pendingTask.push(() => step({
       start: end,
       length: b.length + (Math.random() * 10 - 5),
       theta: b.theta - 0.3 * Math.random()
     }, depth + 1))
   }
-  if (depth < 2 || Math.random() < 0.5) {
+  if (depth < 4 || Math.random() < 0.5) {
     pendingTask.push(() => step({
       start: end,
       length: b.length + (Math.random() * 10 - 5),
@@ -82,11 +80,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <canvas ref="el" width="400" height="400"></canvas>
+  <canvas ref="el" width="1000" height="600"></canvas>
 </template>
 
 <style scoped>
-canvas {
-  border: 1px solid #fff;
+canvas{
+  opacity: 0.5;
 }
 </style>
